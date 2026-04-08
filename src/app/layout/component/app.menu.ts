@@ -26,10 +26,28 @@ export class AppMenu {
             {
                 label: 'Home',
                 items: [
-                    { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] },
-                    { label: 'Menu', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] }
+                    {
+                        label: 'Inicio',
+                        icon: 'pi pi-fw pi-home',
+                        routerLink: ['/']
+                    },
+                    {
+                        label: 'Nuevo',
+                        icon: 'pi pi-fw pi-plus-circle',
+                        routerLink: ['/nuevo']
+                    },
+                    {
+                        label: 'Buscar',
+                        icon: 'pi pi-fw pi-search',
+                        routerLink: ['/buscar']
+                    },
+                    {
+                        label: 'Reporte',
+                        icon: 'pi pi-fw pi-chart-line',
+                        routerLink: ['/reporte']
+                    }
                 ]
-            },
+            }
         ];
     }
 }
