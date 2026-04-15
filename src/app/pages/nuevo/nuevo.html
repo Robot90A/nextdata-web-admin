@@ -1,1 +1,86 @@
-<p>nuevo works!</p>
+<div class="card">
+  <h3>Nueva Venta</h3>
+  <p>Ingresa los datos del cliente y los productos seleccionados</p>
+</div>
+
+<div class="card">
+  <form [formGroup]="form">
+    <div class="p-fluid grid">
+
+      <!-- CLIENTE -->
+      <div class="col-12 md:col-1">
+        <h4>Datos del Cliente</h4>
+
+        <div class="field mb-3 mt-10">
+          <label>Cédula</label>
+          <input pInputText formControlName="cedula" class="w-full" />
+        </div>
+
+        <div class="field mb-3 mt-4">
+          <label>Nombre</label>
+          <input pInputText formControlName="nombre" class="w-full" />
+        </div>
+
+        <div class="field mb-3 mt-4">
+          <label>Correo</label>
+          <input pInputText formControlName="correo" class="w-full" />
+        </div>
+
+        <div class="grid">
+          <div class="field mb-2 mt-4">
+            <label>Teléfono</label>
+            <input pInputText formControlName="telefono" class="w-full" />
+          </div>
+          <div class="col-3 field mb-3 mt-4">
+            <label>Edad</label>
+            <input pInputText type="number" formControlName="edad" class="w-full" />
+          </div>
+        </div>
+
+
+
+      </div>
+
+      <!-- VENTA -->
+      <div class="col-12 md:col-3">
+        <h4>Detalles de la Venta</h4>
+
+        <div class="grid">
+          <div class="col-1 field mb-3 mt-7">
+            <label>Tipo Producto</label>
+            <p-select [options]="tiposProducto" formControlName="tipoProducto"
+              optionLabel="label" optionValue="value"
+              class="w-full" placeholder="Seleccione">
+            </p-select>
+          </div>
+
+          <div class="col-1 field mb-3">
+            <label>Cantidad</label>
+            <input pInputText type="number" formControlName="cantidad" class="w-full" />
+          </div>
+
+          <div class="col-1 field mb-3">
+            <label>Producto</label>
+            <p-select [options]="productos" formControlName="producto"
+              optionLabel="label" optionValue="value"
+              class="w-full" placeholder="Seleccione">
+            </p-select>
+          </div>
+
+          <div class="col-4 field mb-3">
+            <label>Fecha</label>
+            <p-datepicker formControlName="fecha" class="w-full"></p-datepicker>
+          </div>
+
+        </div>
+
+                <div class="flex justify-content-end gap-2 mt-10">
+          <button pButton label="Guardar" (click)="guardar()"></button>
+          <button pButton label="Limpiar" severity="secondary" type="button"></button>
+        </div>
+
+      </div>
+
+    </div>
+  </form>
+</div>
