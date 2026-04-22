@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
+import { ClienteService } from '../../services/cliente-service'; // ajusta ruta
 
 @Component({
     selector: 'app-nuevo',
@@ -11,20 +12,16 @@ import { SelectModule } from 'primeng/select';
     imports: [ReactiveFormsModule, InputTextModule, ButtonModule, DatePickerModule, SelectModule],
     templateUrl: './nuevo.html'
 })
-export class Nuevo {
+export class Nuevo implements OnInit {
     form: FormGroup;
 
-    tiposProducto = [
-        { label: 'Embutido', value: 1 },
-        { label: 'Bebida', value: 2 }
-    ];
+    tiposProducto: any[] = [];
+    productos: any[] = [];
 
-    productos = [
-        { label: 'Salchicha', value: 1 },
-        { label: 'Jugo', value: 2 }
-    ];
-
-    constructor(private fb: FormBuilder) {
+    constructor(
+        private fb: FormBuilder,
+        private clienteService: ClienteService
+    ) {
         this.form = this.fb.group({
             cedula: ['', Validators.required],
             nombre: ['', Validators.required],
@@ -39,9 +36,44 @@ export class Nuevo {
         });
     }
 
+    ngOnInit(): void {
+        this.cargarTiposProducto();
+        this.cargarProductos();
+    }
+
+    cargarTiposProducto() {
+        this.clienteService.getTiposProducto().subscribe((data) => {
+            this.tiposProducto = data.map((tp) => ({
+                label: tp.nombreTipo,
+                value: tp.idTipo
+            }));
+        });
+    }
+
+    cargarProductos() {
+        this.clienteService.getProductos().subscribe((data) => {
+            this.productos = data.map((p) => ({
+                label: p.nombreProducto,
+                value: p.idProducto
+            }));
+        });
+    }
+
     guardar() {
         if (this.form.valid) {
-            console.log(this.form.value);
+            const data = this.form.value;
+
+            console.log('Datos enviados:', data);
+
+            // OPCIONAL (cuando quieras conectar)
+            this.clienteService.guardarCliente(data).subscribe({
+                next: (res) => {
+                    console.log('Guardado OK', res);
+                },
+                error: (err) => {
+                    console.error('Error', err);
+                }
+            });
         } else {
             this.form.markAllAsTouched();
         }
