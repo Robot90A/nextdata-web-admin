@@ -4,13 +4,16 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
-import { ClienteService } from '../../services/cliente-service'; // ajusta ruta
+import { ClienteService } from '../../services/cliente-service';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
     selector: 'app-nuevo',
     standalone: true,
-    imports: [ReactiveFormsModule, InputTextModule, ButtonModule, DatePickerModule, SelectModule],
-    templateUrl: './nuevo.html'
+    imports: [ReactiveFormsModule, InputTextModule, ButtonModule, DatePickerModule, SelectModule, ToastModule],
+    templateUrl: './nuevo.html',
+    providers: [MessageService]
 })
 export class Nuevo implements OnInit {
     form: FormGroup;
@@ -20,7 +23,8 @@ export class Nuevo implements OnInit {
 
     constructor(
         private fb: FormBuilder,
-        private clienteService: ClienteService
+        private clienteService: ClienteService,
+        private messageService: MessageService
     ) {
         this.form = this.fb.group({
             cedula: ['', Validators.required],
@@ -61,17 +65,42 @@ export class Nuevo implements OnInit {
 
     guardar() {
         if (this.form.valid) {
-            const data = this.form.value;
+            const f = this.form.value;
 
-            console.log('Datos enviados:', data);
+            const data = {
+                cedula: f.cedula,
+                nombre: f.nombre,
+                correo: f.correo,
+                telefono: f.telefono,
+                edad: f.edad,
 
-            // OPCIONAL (cuando quieras conectar)
-            this.clienteService.guardarCliente(data).subscribe({
-                next: (res) => {
-                    console.log('Guardado OK', res);
+                productoId: f.producto,
+                cantidad: f.cantidad,
+
+                fecha_venta: f.fecha ? f.fecha.toISOString().split('T')[0] : null
+            };
+
+            console.log('Enviando:', data);
+
+            this.clienteService.guardarVenta(data).subscribe({
+                next: () => {
+                    console.log('Venta guardada correctamente');
+
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Éxito',
+                        detail: 'Venta guardada correctamente'
+                    });
+
+                    this.form.reset(); // impia formulario
                 },
                 error: (err) => {
-                    console.error('Error', err);
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: 'No se pudo guardar la venta'
+                    });
+                    console.error('Error al guardar', err);
                 }
             });
         } else {
