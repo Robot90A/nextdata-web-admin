@@ -7,11 +7,13 @@ import { SelectModule } from 'primeng/select';
 import { ClienteService } from '../../services/cliente-service';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { CommonModule } from '@angular/common';
+import { TableModule } from 'primeng/table';
 
 @Component({
     selector: 'app-nuevo',
     standalone: true,
-    imports: [ReactiveFormsModule, InputTextModule, ButtonModule, DatePickerModule, SelectModule, ToastModule],
+    imports: [ReactiveFormsModule, InputTextModule, ButtonModule, DatePickerModule, SelectModule, ToastModule, CommonModule, TableModule],
     templateUrl: './nuevo.html',
     providers: [MessageService]
 })
@@ -20,6 +22,7 @@ export class Nuevo implements OnInit {
 
     tiposProducto: any[] = [];
     productos: any[] = [];
+    detalles: any[] = [];
 
     constructor(
         private fb: FormBuilder,
@@ -64,7 +67,7 @@ export class Nuevo implements OnInit {
     }
 
     guardar() {
-        if (this.form.valid) {
+        if (this.form.valid && this.detalles.length > 0) {
             const f = this.form.value;
 
             const data = {
@@ -74,25 +77,26 @@ export class Nuevo implements OnInit {
                 telefono: f.telefono,
                 edad: f.edad,
 
-                productoId: f.producto,
-                cantidad: f.cantidad,
+                fecha_venta: f.fecha ? f.fecha.toISOString().split('T')[0] : null,
 
-                fecha_venta: f.fecha ? f.fecha.toISOString().split('T')[0] : null
+                detalles: this.detalles.map((d) => ({
+                    idProducto: d.idProducto,
+                    cantidad: d.cantidad
+                }))
             };
 
             console.log('Enviando:', data);
 
             this.clienteService.guardarVenta(data).subscribe({
                 next: () => {
-                    console.log('Venta guardada correctamente');
-
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Éxito',
                         detail: 'Venta guardada correctamente'
                     });
 
-                    this.form.reset(); // impia formulario
+                    this.form.reset();
+                    this.detalles = []; //limpiar lista
                 },
                 error: (err) => {
                     this.messageService.add({
@@ -100,11 +104,46 @@ export class Nuevo implements OnInit {
                         summary: 'Error',
                         detail: 'No se pudo guardar la venta'
                     });
-                    console.error('Error al guardar', err);
+                    console.error(err);
                 }
             });
         } else {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Advertencia',
+                detail: 'Completa los datos y agrega al menos un producto'
+            });
+
             this.form.markAllAsTouched();
         }
+    }
+
+    agregarDetalle() {
+        const f = this.form.value;
+
+        if (!f.producto || !f.cantidad) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Advertencia',
+                detail: 'Seleccione producto y cantidad'
+            });
+            return;
+        }
+
+        this.detalles.push({
+            idProducto: f.producto,
+            cantidad: f.cantidad,
+            nombreProducto: this.productos.find((p) => p.value === f.producto)?.label
+        });
+
+        // limpiar solo esa parte
+        this.form.patchValue({
+            producto: null,
+            cantidad: 1
+        });
+    }
+
+    eliminarDetalle(index: number) {
+        this.detalles.splice(index, 1);
     }
 }

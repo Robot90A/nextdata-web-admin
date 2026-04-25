@@ -25,5 +25,4 @@ export class ClienteService {
         return this.http.post(`${this.api}/guardarVenta`, data);
     }
 
-
 }

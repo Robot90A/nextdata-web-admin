@@ -1,88 +1,116 @@
 <p-toast></p-toast>
 
 <div class="card">
-  <h3>Nueva Venta</h3>
-  <p>Ingresa los datos del cliente y los productos seleccionados</p>
+    <h3>Nueva Venta</h3>
+    <p>Ingresa los datos del cliente y los productos seleccionados</p>
 </div>
 
 <div class="card">
-  <form [formGroup]="form">
-    <div class="p-fluid grid">
+    <form [formGroup]="form">
+        <div class="p-fluid grid">
+            <!-- CLIENTE -->
+            <div class="col-12 md:col-1">
+                <h4>Datos del Cliente</h4>
 
-      <!-- CLIENTE -->
-      <div class="col-12 md:col-1">
-        <h4>Datos del Cliente</h4>
+                <div class="field mb-3 mt-10">
+                    <label>Cédula</label>
+                    <input pInputText formControlName="cedula" class="w-full" />
+                </div>
 
-        <div class="field mb-3 mt-10">
-          <label>Cédula</label>
-          <input pInputText formControlName="cedula" class="w-full" />
-        </div>
+                <div class="field mb-3 mt-4">
+                    <label>Nombre</label>
+                    <input pInputText formControlName="nombre" class="w-full" />
+                </div>
 
-        <div class="field mb-3 mt-4">
-          <label>Nombre</label>
-          <input pInputText formControlName="nombre" class="w-full" />
-        </div>
+                <div class="field mb-3 mt-4">
+                    <label>Correo</label>
+                    <input pInputText formControlName="correo" class="w-full" />
+                </div>
 
-        <div class="field mb-3 mt-4">
-          <label>Correo</label>
-          <input pInputText formControlName="correo" class="w-full" />
-        </div>
+                <div class="grid">
+                    <div class="field mb-2 mt-4">
+                        <label>Teléfono</label>
+                        <input pInputText formControlName="telefono" class="w-full" />
+                    </div>
+                    <div class="col-3 field mb-3 mt-4">
+                        <label>Edad</label>
+                        <input pInputText type="number" formControlName="edad" class="w-full" />
+                    </div>
+                </div>
+            </div>
 
-        <div class="grid">
-          <div class="field mb-2 mt-4">
-            <label>Teléfono</label>
-            <input pInputText formControlName="telefono" class="w-full" />
-          </div>
-          <div class="col-3 field mb-3 mt-4">
-            <label>Edad</label>
-            <input pInputText type="number" formControlName="edad" class="w-full" />
-          </div>
-        </div>
+            <!-- VENTA -->
+            <div class="col-12 md:col-3">
+                <h4>Detalles de la Venta</h4>
 
+                <div class="grid">
+                    <div class="col-1 field mb-3 mt-7">
+                        <label>Tipo Producto</label>
+                        <p-select [options]="tiposProducto" formControlName="tipoProducto" optionLabel="label" optionValue="value" class="w-full" placeholder="Seleccione"> </p-select>
+                    </div>
 
+                    <div class="col-1 field mb-3">
+                        <label>Cantidad</label>
+                        <input pInputText type="number" formControlName="cantidad" class="w-full" />
+                    </div>
 
-      </div>
+                    <div class="col-1 field mb-3">
+                        <label>Producto</label>
+                        <p-select [options]="productos" formControlName="producto" optionLabel="label" optionValue="value" class="w-full" placeholder="Seleccione"> </p-select>
+                    </div>
 
-      <!-- VENTA -->
-      <div class="col-12 md:col-3">
-        <h4>Detalles de la Venta</h4>
-
-        <div class="grid">
-          <div class="col-1 field mb-3 mt-7">
-            <label>Tipo Producto</label>
-            <p-select [options]="tiposProducto" formControlName="tipoProducto"
-              optionLabel="label" optionValue="value"
-              class="w-full" placeholder="Seleccione">
-            </p-select>
-          </div>
-
-          <div class="col-1 field mb-3">
-            <label>Cantidad</label>
-            <input pInputText type="number" formControlName="cantidad" class="w-full" />
-          </div>
-
-          <div class="col-1 field mb-3">
-            <label>Producto</label>
-            <p-select [options]="productos" formControlName="producto"
-              optionLabel="label" optionValue="value"
-              class="w-full" placeholder="Seleccione">
-            </p-select>
-          </div>
-
-          <div class="col-4 field mb-3">
-            <label>Fecha</label>
-            <p-datepicker formControlName="fecha" class="w-full"></p-datepicker>
-          </div>
-
-        </div>
+                    <div class="col-4 field mb-3">
+                        <label>Fecha</label>
+                        <p-datepicker formControlName="fecha" class="w-full"></p-datepicker>
+                    </div>
+                </div>
 
                 <div class="flex justify-content-end gap-2 mt-10">
-          <button pButton label="Guardar" (click)="guardar()"></button>
-          <button pButton label="Limpiar" severity="secondary" type="button"></button>
+                    <button pButton label="Agregar Producto" type="button" (click)="agregarDetalle()"></button>
+
+                    <button pButton label="Guardar Venta" class="ml-2" type="button" (click)="guardar()"></button>
+                </div>
+            </div>
         </div>
+    </form>
+</div>
 
-      </div>
+<div class="card">
+    <h4>Productos agregados</h4>
 
-    </div>
-  </form>
+    <p-table
+        [value]="detalles"
+        class="w-full p-datatable-striped p-datatable-sm"
+    >
+        <ng-template pTemplate="header">
+            <tr>
+                <th>Producto</th>
+                <th style="width: 120px">Cantidad</th>
+                <th style="width: 120px; text-align: center">Acción</th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-d let-i="rowIndex">
+            <tr>
+                <td>{{ d.nombreProducto }}</td>
+                <td class="text-center">{{ d.cantidad }}</td>
+                <td class="text-center">
+                    <button
+                        pButton
+                        icon="pi pi-trash"
+                        severity="danger"
+                        (click)="eliminarDetalle(i)">
+                    </button>
+                </td>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td colspan="3" class="text-center">
+                    No hay productos agregados
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
 </div>
